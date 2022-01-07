@@ -15,7 +15,7 @@ class MQTTConfigurationData:
     def __init__(self):
         self.client_id = os.environ.get('MQTT_BROKER_CLIENT_ID', DEFAULT_MQTT_CLIENT_ID)
         self.host = os.environ.get('MQTT_BROKER_HOST')
-        self.port = os.environ.get('MQTT_BROKER_PORT')
+        self.port = os.environ.get('MQTT_BROKER_PORT', 1883)
         self.username = os.environ.get('MQTT_BROKER_USERNAME')
         self.password = os.environ.get('MQTT_BROKER_PASSWORD')
 

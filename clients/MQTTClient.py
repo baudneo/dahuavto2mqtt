@@ -99,7 +99,7 @@ class MQTTClient(asyncio.Protocol):
             try:
                 _LOGGER.info(f"MQTT Broker got disconnected, trying to reconnect...")
 
-                client.connect(userdata.mqtt_broker_host, int(userdata.mqtt_broker_port), 60)
+                client.connect(userdata.mqtt_config.host, int(userdata.mqtt_config.port), 60)
                 client.loop_start()
 
                 connected = True
