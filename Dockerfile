@@ -3,7 +3,7 @@ MAINTAINER Elad Bar <elad.bar@hotmail.com>
 
 WORKDIR /app
 
-COPY * ./
+COPY . ./
 
 RUN apk update && \
     apk upgrade && \
