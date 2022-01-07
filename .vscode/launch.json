@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "name": "Python: Debug Application",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/DahuaVTO.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Re-install requirements",
+            "request": "launch",
+            "type": "python",
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/venv/Scripts/pip.exe",
+            "args": [
+                "install",
+                "-r",
+                "requirements.txt"
+            ]
+        }
+    ]
+}

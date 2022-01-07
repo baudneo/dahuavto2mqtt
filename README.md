@@ -1,33 +1,11 @@
 # DahuaVTO2MQTT
-Listens to events from Dahua VTO, Camera, NVR unit and publishes them via MQTT Message
+Listens to events from all Dahua devices - VTO, Camera, NVR unit and publishes them via MQTT Message
 
 [Dahua VTO MQTT Events - examples](https://github.com/elad-bar/DahuaVTO2MQTT/blob/master/MQTTEvents.MD)
 
-[Tested Models](https://github.com/elad-bar/DahuaVTO2MQTT/blob/master/SupportedModels.md) - Should work with all Dahua devices
-
-## Environment Variables
-```
-DAHUA_VTO_HOST: 			Dahua VTO hostname or IP
-DAHUA_VTO_USERNAME: 		Dahua VTO username to access (should be admin)
-DAHUA_VTO_PASSWORD: 		Dahua VTO administrator password (same as accessing web management)
-MQTT_BROKER_HOST: 			MQTT Broker hostname or IP
-MQTT_BROKER_PORT: 			MQTT Broker port, default=1883
-MQTT_BROKER_USERNAME: 		MQTT Broker username
-MQTT_BROKER_PASSWORD: 		MQTT Broker password
-MQTT_BROKER_TOPIC_PREFIX: 	MQTT Broker topic prefix, default=DahuaVTO
-DEBUG:                      Minimum log level (Debug / Info), default=False
-```
-
-## Run manually
-Requirements:
-* All environment variables above
-
-```
-python3 DahuaVTO.py
-```
-
-## Docker Compose
-```
+## How to install
+### Docker Compose
+```dockerfile
 version: '2'
 services:
   dahuavto2mqtt:
@@ -44,8 +22,24 @@ services:
       - MQTT_BROKER_USERNAME=Username
       - MQTT_BROKER_PASSWORD=Password 
       - MQTT_BROKER_TOPIC_PREFIX=DahuaVTO
+      - MQTT_BROKER_CLIENT_ID=DahuaVTO2MQTT
       - DEBUG=False
 ```
+
+### Environment Variables
+| Variable                 | Default       | Required | Description                |
+|--------------------------|---------------|----------|----------------------------|
+| DAHUA_VTO_HOST           | -             | +        | Dahua VTO hostname or IP   |
+| DAHUA_VTO_USERNAME       | -             | +        | Dahua VTO user name        |
+| DAHUA_VTO_PASSWORD       | -             | +        | Dahua VTO password         |
+| MQTT_BROKER_HOST         | -             | +        | MQTT Broker hostname or IP |
+| MQTT_BROKER_PORT         | -             | +        | MQTT Broker port           |
+| MQTT_BROKER_USERNAME     | -             | +        | MQTT Broker user name      |
+| MQTT_BROKER_PASSWORD     | -             | +        | MQTT Broker password       |
+| MQTT_BROKER_TOPIC_PREFIX | DahuaVTO      | -        | Topic to publish messages  |
+| MQTT_BROKER_CLIENT_ID    | DahuaVTO2MQTT | -        | MQTT Broker client ID      |
+| DEBUG                    | false         | -        | Enable debug log messages  |
+
 
 ## Commands
 
@@ -56,7 +50,12 @@ If unit supports more than 1 door, please add to the payload `Door` parameter wi
 
 ## Changelog
 
-* 2020-Dec-11
+* 2022-Jan-07
+  * Restructure code (2 clients - Dahua and MQTT)
+  * Added support to mute call once ring using topic `DahuaVTO/Command/Mute`
+
+
+* 2021-Dec-11
   
   * Changed MQTT Client to Mosquitto\Client
     

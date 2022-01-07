@@ -8,15 +8,20 @@ Publish MQTT Message to perform action
 TOPIC: [MQTT_BROKER_TOPIC_PREFIX]/Command/Open
 ```
 
+### Mute call
+```
+TOPIC: [MQTT_BROKER_TOPIC_PREFIX]/Command/Mute
+```
+
 ## Lock State
 Topic `[MQTT_BROKER_TOPIC_PREFIX]/MagneticLock/Status` represents the locking status,
 Works only if the lock released by the DahuaVTO2MQTT
 
-Since there is not real indication, it pulls from the configuration of the unit the interval allowed between unlocks (as defined in the Web Manager of the unit),
+Since there is no real indication, it pulls from the configuration of the unit the interval allowed between unlocks (as defined in the Web Manager of the unit),
 
 It will also protect duplicate attempts while the magnetic lock is in unlock interval
 
-```json
+```json5
 {
     "door":"Door ID",
     "isLocked":"true/false"
@@ -27,7 +32,7 @@ It will also protect duplicate attempts while the magnetic lock is in unlock int
 Topic will be always [MQTT_BROKER_TOPIC_PREFIX]/[EVENT NAME]/Event
 Message represent an event
 
-```json
+```json5
 {
     "deviceType":"Device Model",
     "serialNumber":"Device Serial Number"
@@ -36,7 +41,7 @@ Message represent an event
 
 
 ### CallNoAnswered: Call from VTO
-```json
+```json5
 {
     "Action": "Start",
     "Data": {
@@ -57,7 +62,7 @@ Message represent an event
 
 
 ### VideoMotion: Video motion detected
-```json
+```json5
 {
     "Action": "Start",
     "Data": {
@@ -74,7 +79,7 @@ Action: Represented whether event Start or Stop
 Data.Device: IP of the device connected / disconnected
 	
 ### BackKeyLight: BackKeyLight with State
-```json
+```json5
 {
     "Action": "Pulse",
     "Data": {
@@ -88,7 +93,7 @@ Data.Device: IP of the device connected / disconnected
 ```
 
 ### TimeChange: Time changed
-```json
+```json5
 {
     "Action": "Pulse",
     "Data": {
@@ -103,7 +108,7 @@ Data.Device: IP of the device connected / disconnected
 ```
 
 ### NTPAdjustTime: NTP Adjusted time
-```json
+```json5
 {
     "Action": "Pulse",
     "Data": {
@@ -128,7 +133,7 @@ Action: Represents whether event Start or Stop
 Data.FingerPrintID: Finger print ID, if 0, check failed
 
 ### SIPRegisterResult: SIP Device registration status
-```json
+```json5
 {
     "Action": "Pulse",
     "Data": {
@@ -143,7 +148,7 @@ Data.FingerPrintID: Finger print ID, if 0, check failed
 ```
 
 ### AccessControl: Someone opened the door
-```json
+```json5
 {
     "Action": "Pulse",
     "Data": {
@@ -168,7 +173,7 @@ Data.FingerPrintID: Finger print ID, if 0, check failed
 
 
 ### CallSnap: Call
-```json
+```json5
 {
     "Action": "Pulse",
     "Data": {
@@ -183,7 +188,7 @@ Data.FingerPrintID: Finger print ID, if 0, check failed
 ```
 
 ### Invite: Invite for a call (calling)
-```json
+```json5
 {
     "Action": "Pulse",
     "Data": {
@@ -201,11 +206,11 @@ Data.FingerPrintID: Finger print ID, if 0, check failed
 ```
 	
 ### AccessSnap: ?
-```json
+```json5
 {
     "Action": "?",
     "Data": {
-        "FtpUrl": "FTP uploaded to",
+        "FtpUrl": "FTP uploaded to"
     },
     "deviceType":"Device Model",
     "serialNumber":"Device Serial Number"
@@ -213,7 +218,7 @@ Data.FingerPrintID: Finger print ID, if 0, check failed
 ```
 
 ### RequestCallState: ? 
-```json
+```json5
 {
     "Action": "?",
     "Data": {
@@ -226,7 +231,7 @@ Data.FingerPrintID: Finger print ID, if 0, check failed
 ```
 
 ### PassiveHungup: Call was dropped
-```json
+```json5
 {
     "Action": "?",
     "Data": {
@@ -239,7 +244,7 @@ Data.FingerPrintID: Finger print ID, if 0, check failed
 ```
 
 ### ProfileAlarmTransmit: Alarm triggered
-```json
+```json5
 {
     "Action": "?",
     "Data": {
@@ -253,7 +258,7 @@ Data.FingerPrintID: Finger print ID, if 0, check failed
 ```
 
 ### BackLightOn: Back light turned-on
-```json
+```json5
 {
     "Action": "Pulse",
     "Data": {
@@ -266,7 +271,7 @@ Data.FingerPrintID: Finger print ID, if 0, check failed
 ```
 
 ### BackLightOff: Back light turned-on
-```json
+```json5
 {
     "Action": "Pulse",
     "Data": {
@@ -279,7 +284,7 @@ Data.FingerPrintID: Finger print ID, if 0, check failed
 ```
 
 ### AlarmLocal: Alarm triggered by the VTO unit
-```json
+```json5
 {
     "Action": "Stop",		//Represents whether event for Start or Stop
     "Data": {
@@ -292,7 +297,7 @@ Data.FingerPrintID: Finger print ID, if 0, check failed
 ```
 
 ### APConnect: AccessPoint got connected (Stop) or disconnected (Start)
-```json
+```json5
 {
     "Action": "Stop",
     "Data": {
@@ -308,7 +313,7 @@ Data.FingerPrintID: Finger print ID, if 0, check failed
 ```
 
 ## Generic structure
-```json
+```json5
 {
     "id": "MESSAGE ID",
     "method":"client.notifyEventStream",
