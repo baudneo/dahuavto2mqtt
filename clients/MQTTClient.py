@@ -71,7 +71,7 @@ class MQTTClient(asyncio.Protocol):
         _LOGGER.debug(f"MQTT Message received, Topic: {msg.topic}, Payload: {msg.payload}")
 
         try:
-            payload = None
+            payload = {}
 
             if msg.payload is not None:
                 data = msg.payload.decode("utf-8")

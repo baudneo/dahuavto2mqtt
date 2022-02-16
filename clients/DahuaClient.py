@@ -26,7 +26,6 @@ class DahuaClient(asyncio.Protocol):
     random: Optional[str]
     mqtt_client: MQTTClient
     dahua_details: Dict[str, Any]
-    base_url: str
     hold_time: int
     lock_status: Dict[int, bool]
     data_handlers: Dict[Any, Callable[[Any, str], None]]
@@ -348,7 +347,7 @@ class DahuaClient(asyncio.Protocol):
                 self.lock_status[door_id] = is_locked
                 self.publish_lock_state(door_id, False)
 
-                url = f"{self.base_url}{ENDPOINT_ACCESS_CONTROL}{door_id}"
+                url = f"{self.dahua_config.base_url}{ENDPOINT_ACCESS_CONTROL}{door_id}"
 
                 response = requests.get(url, verify=False, auth=self.dahua_config.auth)
 
