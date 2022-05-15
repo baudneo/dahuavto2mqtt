@@ -97,7 +97,7 @@ class MQTTClient(asyncio.Protocol):
         _LOGGER.warning(f"MQTT Broker got disconnected, will try to reconnect in 1 minute...")
         sleep(60)
 
-        userdata.on_message(userdata.manager)
+        userdata.on_disconnected(userdata.manager)
 
     def publish(self, topic_suffix: str, payload: dict):
         topic = f"{self.mqtt_config.topic_prefix}/{topic_suffix}"
