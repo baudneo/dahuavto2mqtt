@@ -50,6 +50,8 @@ If unit supports more than 1 door, please add to the payload `Door` parameter wi
 
 ## Changelog
 
+* 2022-May-15 - MQTT Broker reconnect fix
+
 * 2022-Feb-16 - Fix event handling
 
 * 2022-Jan-20 - MQTT Broker reconnect after 60 seconds

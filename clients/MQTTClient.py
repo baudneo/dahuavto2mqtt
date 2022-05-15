@@ -16,16 +16,17 @@ _LOGGER = logging.getLogger(__name__)
 class MQTTClient(asyncio.Protocol):
     mqtt_config: MQTTConfigurationData
     on_message: Callable[[Any, str, dict], None]
+    on_disconnected: Callable[[Any], None]
     manager: Any
 
-    def __init__(self, manager, on_message: Callable[[Any, str, dict], None]):
+    def __init__(self, manager, on_message: Callable[[Any, str, dict], None], on_disconnected: Callable[[Any], None]):
         self.manager = manager
         self.mqtt_config = MQTTConfigurationData()
         self._mqtt_client = mqtt.Client(self.mqtt_config.client_id)
         self.on_message = on_message
+        self.on_disconnected = on_disconnected
 
     def initialize(self):
-        _LOGGER.info("Initializing MQTT Broker")
         connected = False
         self._mqtt_client.user_data_set(self)
 
@@ -96,23 +97,7 @@ class MQTTClient(asyncio.Protocol):
         _LOGGER.warning(f"MQTT Broker got disconnected, will try to reconnect in 1 minute...")
         sleep(60)
 
-        connected = False
-
-        while not connected:
-            try:
-                _LOGGER.info(f"MQTT Broker - trying to reconnect...")
-
-                client.connect(userdata.mqtt_config.host, int(userdata.mqtt_config.port), 60)
-                client.loop_start()
-
-                connected = True
-
-            except Exception as ex:
-                exc_type, exc_obj, exc_tb = sys.exc_info()
-
-                _LOGGER.error(f"Failed to reconnect, retry in 60 seconds, error: {ex}, Line: {exc_tb.tb_lineno}")
-
-                sleep(60)
+        userdata.on_message(userdata.manager)
 
     def publish(self, topic_suffix: str, payload: dict):
         topic = f"{self.mqtt_config.topic_prefix}/{topic_suffix}"

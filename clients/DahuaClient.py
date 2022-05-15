@@ -33,7 +33,7 @@ class DahuaClient(asyncio.Protocol):
 
     def __init__(self):
         self.dahua_config = DahuaConfigurationData()
-        self.mqtt_client = MQTTClient(self, self.on_mqtt_message)
+        self.mqtt_client = MQTTClient(self, self.on_mqtt_message, self.on_mqtt_disconnected)
 
         self.dahua_details = {}
 
@@ -94,6 +94,15 @@ class DahuaClient(asyncio.Protocol):
             exc_type, exc_obj, exc_tb = sys.exc_info()
 
             _LOGGER.error(f"Failed to handle callback, error: {ex}, Line: {exc_tb.tb_lineno}")
+
+    @staticmethod
+    def on_mqtt_disconnected(self):
+        try:
+            self.mqtt_client.initialize()
+        except Exception as ex:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+
+            _LOGGER.error(f"Failed to handle MQTT disconnected event, error: {ex}, Line: {exc_tb.tb_lineno}")
 
     def handle_notify_event_stream(self, params):
         try:
