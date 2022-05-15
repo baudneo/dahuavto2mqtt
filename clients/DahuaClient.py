@@ -48,7 +48,7 @@ class DahuaClient(asyncio.Protocol):
         self.data_handlers = {}
         self.mqtt_handlers = {
             TOPIC_DOOR: self.access_control_open_door,
-            TOPIC_MUTE: self.access_control_open_door
+            TOPIC_MUTE: self.run_cmd_mute
         }
 
         self._loop = asyncio.get_event_loop()
