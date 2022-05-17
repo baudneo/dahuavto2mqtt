@@ -1,4 +1,3 @@
-
 DEFAULT_MQTT_CLIENT_ID = "DahuaVTO2MQTT"
 DEFAULT_MQTT_TOPIC_PREFIX = "DahuaVTO"
 
@@ -31,11 +30,22 @@ ENDPOINT_MAGICBOX_SYSINFO = "magicBox.cgi?action=getSystemInfo"
 MQTT_ERROR_DEFAULT_MESSAGE = "Unknown error"
 
 MQTT_ERROR_MESSAGES = {
-    1: "MQTT Broker failed to connect: incorrect protocol version",
-    2: "MQTT Broker failed to connect: invalid client identifier",
-    3: "MQTT Broker failed to connect: server unavailable",
-    4: "MQTT Broker failed to connect: bad username or password",
-    5: "MQTT Broker failed to connect: not authorised"
+    0: "MQTT Broker connected successfully",
+    1: "Incorrect protocol version",
+    2: "Invalid client identifier",
+    3: "Server unavailable",
+    4: "Bad username or password",
+    5: "Not authorised",
+    6: "Message not found (internal error)",
+    7: "The connection was lost",
+    8: "A TLS error occurred",
+    9: "Payload too large",
+    10: "This feature is not supported",
+    11: "Authorisation failed",
+    12: "Access denied by ACL",
+    13: "Unknown error",
+    14: "Error defined by errno",
+    15: "Queue size",
 }
 
 TOPIC_COMMAND = "/Command"

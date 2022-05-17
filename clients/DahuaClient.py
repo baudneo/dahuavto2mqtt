@@ -24,7 +24,7 @@ class DahuaClient(asyncio.Protocol):
     keep_alive_interval: int
     realm: Optional[str]
     random: Optional[str]
-    mqtt_client: MQTTClient
+    mqtt_client: Optional[MQTTClient]
     dahua_details: Dict[str, Any]
     hold_time: int
     lock_status: Dict[int, bool]
@@ -33,8 +33,6 @@ class DahuaClient(asyncio.Protocol):
 
     def __init__(self):
         self.dahua_config = DahuaConfigurationData()
-        self.mqtt_client = MQTTClient(self, self.on_mqtt_message, self.on_mqtt_disconnected)
-
         self.dahua_details = {}
 
         self.realm = None
@@ -52,6 +50,7 @@ class DahuaClient(asyncio.Protocol):
         }
 
         self._loop = asyncio.get_event_loop()
+        self.mqtt_client = MQTTClient(self, self.on_mqtt_message)
 
     def connection_made(self, transport):
         _LOGGER.debug("Connection established")
@@ -60,6 +59,7 @@ class DahuaClient(asyncio.Protocol):
             self.transport = transport
 
             self.mqtt_client.initialize()
+
             self.pre_login()
 
         except Exception as ex:
@@ -98,7 +98,7 @@ class DahuaClient(asyncio.Protocol):
     @staticmethod
     def on_mqtt_disconnected(self):
         try:
-            self.mqtt_client.initialize()
+            self._loop.stop()
         except Exception as ex:
             exc_type, exc_obj, exc_tb = sys.exc_info()
 
@@ -115,7 +115,8 @@ class DahuaClient(asyncio.Protocol):
                     if k in DAHUA_ALLOWED_DETAILS:
                         message[k] = self.dahua_details.get(k)
 
-                self.mqtt_client.publish(f"{code}/Event", message)
+                if self.mqtt_client.is_connected:
+                    self.mqtt_client.publish(f"{code}/Event", message)
 
         except Exception as ex:
             exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -385,7 +386,8 @@ class DahuaClient(asyncio.Protocol):
             "isLocked": is_locked
         }
 
-        self.mqtt_client.publish("/MagneticLock/Status", message)
+        if self.mqtt_client.is_connected:
+            self.mqtt_client.publish("/MagneticLock/Status", message)
 
     @staticmethod
     def parse_response(response):
