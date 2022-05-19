@@ -37,6 +37,10 @@ class MQTTClient:
     def is_connected(self):
         return self._is_connected
 
+    @property
+    def on_message(self):
+        return self._on_message
+
     def initialize(self):
         self._is_connected = False
 

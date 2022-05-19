@@ -1,5 +1,9 @@
 # Changelog
 
+## 2022-May-19
+
+- Fix wrong call to function
+
 ## 2022-May-17
 
 - Additional optimization to MQTT connection
