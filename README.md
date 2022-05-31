@@ -1,20 +1,20 @@
 # DahuaVTO2MQTT
 Listens to events from all Dahua devices - VTO, Camera, NVR unit and publishes them via MQTT Message
 
-[Change log](https://github.com/elad-bar/DahuaVTO2MQTT/blob/master/CHANGELOG.md)
+[Change log](https://gitlab.com/elad.bar/DahuaVTO2MQTT/-/blob/master/CHANGELOG.md)
 
-[Dahua VTO MQTT Events - examples](https://github.com/elad-bar/DahuaVTO2MQTT/blob/master/MQTTEvents.MD)
+[Dahua VTO MQTT Events - examples](https://gitlab.com/elad.bar/DahuaVTO2MQTT/-/blob/master/MQTTEvents.MD)
 
 ## How to install
 ### Docker Compose
 ```dockerfile
-version: '2'
+version: '3'
 services:
   dahuavto2mqtt:
-    image: "eladbar/dahuavto2mqtt:latest"
+    image: "registry.gitlab.com/elad.bar/dahuavto2mqtt:latest"
     container_name: "dahuavto2mqtt"
     hostname: "dahuavto2mqtt"
-    restart: always
+    restart: "unless-stopped"
     environment:
       - DAHUA_VTO_HOST=vto-host
       - DAHUA_VTO_USERNAME=Username
@@ -25,7 +25,7 @@ services:
       - MQTT_BROKER_PASSWORD=Password 
       - MQTT_BROKER_TOPIC_PREFIX=DahuaVTO
       - MQTT_BROKER_CLIENT_ID=DahuaVTO2MQTT
-      - DEBUG=False
+      - DEBUG=False      
 ```
 
 ### Environment Variables
