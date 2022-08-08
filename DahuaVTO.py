@@ -3,6 +3,7 @@
 import os
 import sys
 import logging
+from time import sleep
 
 from clients.DahuaClient import DahuaClient
 from clients.MQTTClient import MQTTClient
@@ -31,6 +32,9 @@ class DahuaVTOManager:
     def initialize(self):
         self._mqtt_client.initialize(self._dahua_client.outgoing_events)
         self._dahua_client.initialize(self._mqtt_client.outgoing_events)
+        
+        while True:
+            sleep(1)
 
 
 manager = DahuaVTOManager()
