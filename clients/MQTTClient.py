@@ -110,8 +110,8 @@ class MQTTClient(BaseClient):
             topic = msg.topic.replace(userdata.topic_command_prefix, "")
 
             event_data = {
-                topic: topic,
-                payload: payload
+                "topic": topic,
+                "payload": payload
             }
 
             userdata.outgoing_events.put(event_data)

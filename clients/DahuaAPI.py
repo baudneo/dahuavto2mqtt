@@ -386,7 +386,7 @@ class DahuaAPI(asyncio.Protocol):
         }
 
         event_data = {
-            "event": "/MagneticLock/Status",
+            "event": "MagneticLock/Status",
             "payload": message
         }
 

@@ -58,3 +58,12 @@ class DahuaClient(BaseClient):
                 self.is_connected = False
 
                 sleep(sleep_time)
+
+    def _event_received(self, data):
+        super(DahuaClient, self)._event_received(data)
+
+        topic = data.get("topic")
+        payload = data.get("payload")
+
+        self.api.handle_action(topic, payload)
+
