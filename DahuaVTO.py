@@ -3,10 +3,9 @@
 import os
 import sys
 import logging
-import asyncio
-from time import sleep
 
 from clients.DahuaClient import DahuaClient
+from clients.MQTTClient import MQTTClient
 
 DEBUG = str(os.environ.get('DEBUG', False)).lower() == str(True).lower()
 
@@ -26,31 +25,12 @@ _LOGGER = logging.getLogger(__name__)
 
 class DahuaVTOManager:
     def __init__(self):
-        self._host = os.environ.get('DAHUA_VTO_HOST')
+        self._mqtt_client = MQTTClient()
+        self._dahua_client = DahuaClient()
 
     def initialize(self):
-        while True:
-            try:
-                _LOGGER.info("Connecting")
-
-                loop = asyncio.new_event_loop()
-
-                client = loop.create_connection(DahuaClient, self._host, 5000)
-                loop.run_until_complete(client)
-                loop.run_forever()
-                loop.close()
-
-                _LOGGER.warning("Disconnected, will try to connect in 5 seconds")
-
-                sleep(5)
-
-            except Exception as ex:
-                exc_type, exc_obj, exc_tb = sys.exc_info()
-                line = exc_tb.tb_lineno
-
-                _LOGGER.error(f"Connection failed will try to connect in 30 seconds, error: {ex}, Line: {line}")
-
-                sleep(30)
+        self._mqtt_client.initialize(self._dahua_client.outgoing_events)
+        self._dahua_client.initialize(self._mqtt_client.outgoing_events)
 
 
 manager = DahuaVTOManager()

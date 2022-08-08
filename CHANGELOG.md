@@ -1,5 +1,10 @@
 # Changelog
 
+## 2022-Aug-08
+
+- Refactor Dahua and MQTT clients for better recovery of connections
+- Upgrade Docker Image to Python v3.10
+
 ## 2022-May-19
 
 - Fix wrong call to function

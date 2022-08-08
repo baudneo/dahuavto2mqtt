@@ -1,25 +1,30 @@
-import asyncio
 import json
 import logging
 import sys
 from time import sleep
-from typing import Callable, Any, Optional
 
 import paho.mqtt.client as mqtt
 
+from clients.BaseClient import BaseClient
 from common.consts import *
 from models.MQTTConfigData import MQTTConfigurationData
+
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class MQTTClient:
-    def __init__(self, manager, on_message: Callable[[Any, str, dict], None]):
-        self._manager = manager
+class MQTTClient(BaseClient):
+    def __init__(self):
+        super().__init__("MQTT")
+
         self._mqtt_config = MQTTConfigurationData()
-        self._mqtt_client: Optional[mqtt.Client] = None
-        self._on_message: Callable[[Any, str, dict], None] = on_message
-        self._is_connected = False
+        self._mqtt_client = mqtt.Client(self._mqtt_config.client_id, clean_session=True)
+        self._mqtt_client.user_data_set(self)
+        self._mqtt_client.username_pw_set(self._mqtt_config.username, self._mqtt_config.password)
+
+        self._mqtt_client.on_connect = self._on_mqtt_connect
+        self._mqtt_client.on_message = self._on_mqtt_message
+        self._mqtt_client.on_disconnect = self._on_mqtt_disconnect
 
     @property
     def topic_command_prefix(self):
@@ -29,32 +34,10 @@ class MQTTClient:
     def topic_prefix(self):
         return self._mqtt_config.topic_prefix
 
-    @property
-    def manager(self):
-        return self._manager
-
-    @property
-    def is_connected(self):
-        return self._is_connected
-
-    @property
-    def on_message(self):
-        return self._on_message
-
-    def initialize(self):
-        self._is_connected = False
+    def _connect(self):
+        super(MQTTClient, self)._connect()
 
         config = self._mqtt_config
-
-        self._mqtt_client = mqtt.Client(config.client_id)
-
-        self._mqtt_client.user_data_set(self)
-
-        self._mqtt_client.username_pw_set(config.username, config.password)
-
-        self._mqtt_client.on_connect = self._on_mqtt_connect
-        self._mqtt_client.on_message = self._on_mqtt_message
-        self._mqtt_client.on_disconnect = self._on_mqtt_disconnect
 
         while not self.is_connected:
             try:
@@ -63,7 +46,7 @@ class MQTTClient:
                 self._mqtt_client.connect(config.host, int(config.port), 60)
                 self._mqtt_client.loop_start()
 
-                self._is_connected = True
+                sleep(5)
 
             except Exception as ex:
                 exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -73,6 +56,26 @@ class MQTTClient:
 
                 sleep(60)
 
+    def _event_received(self, data):
+        super(MQTTClient, self)._event_received(data)
+
+        topic_suffix = data.get("event")
+        payload = data.get("payload")
+
+        topic = f"{self.topic_prefix}/{topic_suffix}"
+        _LOGGER.debug(f"Publishing MQTT message {topic}: {payload}")
+
+        try:
+            self._mqtt_client.publish(topic, json.dumps(payload, indent=4))
+        except Exception as ex:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+
+            _LOGGER.error(
+                f"Failed to publish message, "
+                f"Topic: {topic}, Payload: {payload}, "
+                f"Error: {ex}, Line: {exc_tb.tb_lineno}"
+            )
+
     @staticmethod
     def _on_mqtt_connect(client, userdata, flags, rc):
         if rc == 0:
@@ -80,12 +83,16 @@ class MQTTClient:
 
             client.subscribe(f"{userdata.topic_command_prefix}#")
 
+            userdata.is_connected = True
+
         else:
             error_message = MQTT_ERROR_MESSAGES.get(rc, MQTT_ERROR_DEFAULT_MESSAGE)
 
             _LOGGER.error(f"MQTT Broker failed due to {error_message}")
 
-            asyncio.get_event_loop().stop()
+            userdata.is_connected = False
+
+            super(MQTTClient, userdata).connect()
 
     @staticmethod
     def _on_mqtt_message(client, userdata, msg):
@@ -102,7 +109,12 @@ class MQTTClient:
 
             topic = msg.topic.replace(userdata.topic_command_prefix, "")
 
-            userdata.on_message(userdata.manager, topic, payload)
+            event_data = {
+                topic: topic,
+                payload: payload
+            }
+
+            userdata.outgoing_events.put(event_data)
         except Exception as ex:
             exc_type, exc_obj, exc_tb = sys.exc_info()
 
@@ -118,17 +130,6 @@ class MQTTClient:
 
         _LOGGER.warning(f"MQTT Broker got disconnected, Reason Code: {rc} - {reason}")
 
-    def publish(self, topic_suffix: str, payload: dict):
-        topic = f"{self.topic_prefix}/{topic_suffix}"
-        _LOGGER.debug(f"Publishing MQTT message {topic}: {payload}")
+        userdata.is_connected = False
 
-        try:
-            self._mqtt_client.publish(topic, json.dumps(payload, indent=4))
-        except Exception as ex:
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-
-            _LOGGER.error(
-                f"Failed to publish message, "
-                f"Topic: {topic}, Payload: {payload}, "
-                f"Error: {ex}, Line: {exc_tb.tb_lineno}"
-            )
+        super(MQTTClient, userdata).connect()
