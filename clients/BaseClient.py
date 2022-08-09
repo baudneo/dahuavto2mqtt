@@ -13,7 +13,6 @@ class BaseClient:
         self.client_name = client_name
         self.is_connected = False
         self.is_running = True
-        self.count = 0
         self._timer_listen: Optional[Timer] = None
         self._timer_connect: Optional[Timer] = None
         self._incoming_events = None
@@ -38,6 +37,9 @@ class BaseClient:
 
         self.is_connected = False
         self.is_running = False
+
+        self.outgoing_events.empty()
+        self.outgoing_events = None
 
     def connect(self):
         _LOGGER.info(f"Starting to connect {self.client_name}Client, Should connect: {self.should_connect}")
@@ -66,4 +68,4 @@ class BaseClient:
                 self._timer_listen.start()
 
     def _event_received(self, data):
-        _LOGGER.info(f"Event received @{self.client_name}Client, Data: {data}")
+        _LOGGER.debug(f"{self.client_name}Client Event received, Data: {data}")
