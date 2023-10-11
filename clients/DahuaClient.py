@@ -6,9 +6,10 @@ from typing import Optional
 
 from clients.BaseClient import BaseClient
 from clients.DahuaAPI import DahuaAPI
+from common.consts import API_DEBUG
 from models.DahuaConfigData import DahuaConfigurationData
 
-_LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class DahuaClient(BaseClient):
@@ -17,6 +18,17 @@ class DahuaClient(BaseClient):
 
         self.dahua_config = DahuaConfigurationData()
         self.api: Optional[DahuaAPI] = None
+        logger.info(f"{API_DEBUG=}")
+        if API_DEBUG is True:
+            logger.setLevel(logging.DEBUG)
+            for handler in logger.handlers:
+                handler.setLevel(logging.DEBUG)
+            logger.info(f"Set DEBUG level for {__name__}")
+        else:
+            logger.setLevel(logging.INFO)
+            for handler in logger.handlers:
+                handler.setLevel(logging.INFO)
+            logger.info(f"Set INFO level for {__name__}")
 
     def _set_api(self, api: DahuaAPI):
         self.api = api
@@ -28,7 +40,7 @@ class DahuaClient(BaseClient):
             sleep_time = 5
 
             try:
-                _LOGGER.info("Connecting")
+                logger.info("Connecting")
 
                 loop = asyncio.new_event_loop()
 
@@ -48,16 +60,17 @@ class DahuaClient(BaseClient):
                 exc_type, exc_obj, exc_tb = sys.exc_info()
                 line = exc_tb.tb_lineno
 
-                _LOGGER.error(f"Connection failed, Error: {ex}, Line: {line}")
+                logger.error(f"Connection failed, Error: {ex}, Line: {line}")
 
                 sleep_time = 30
 
             finally:
-                _LOGGER.info(f"Disconnected, will try to connect in {sleep_time} seconds")
+                logger.info(f"Disconnected, will try to connect in {sleep_time} seconds")
 
                 self.is_connected = False
 
                 sleep(sleep_time)
+                self.connect()
 
     def _event_received(self, data):
         super(DahuaClient, self)._event_received(data)

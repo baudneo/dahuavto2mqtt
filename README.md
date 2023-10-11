@@ -1,9 +1,11 @@
 # DahuaVTO2MQTT
 Listens to events from all Dahua devices - VTO, Camera, NVR unit and publishes them via MQTT Message
 
-[Change log](https://gitlab.com/elad.bar/DahuaVTO2MQTT/-/blob/master/CHANGELOG.md)
+[Change log](./CHANGELOG.md)
 
-[Dahua VTO MQTT Events - examples](https://gitlab.com/elad.bar/DahuaVTO2MQTT/-/blob/master/MQTTEvents.MD)
+[Dahua VTO MQTT Events - examples](./MQTTEvents.md)
+
+[Supported Models](./SupportedModels.md)
 
 ## How to install
 ### Docker Compose
@@ -25,22 +27,25 @@ services:
       - MQTT_BROKER_PASSWORD=Password 
       - MQTT_BROKER_TOPIC_PREFIX=DahuaVTO
       - MQTT_BROKER_CLIENT_ID=DahuaVTO2MQTT
-      - DEBUG=False      
+      - DEBUG=False
+      - TZ=America/Chicago
 ```
 
 ### Environment Variables
-| Variable                 | Default       | Required | Description                |
-|--------------------------|---------------|----------|----------------------------|
-| DAHUA_VTO_HOST           | -             | +        | Dahua VTO hostname or IP   |
-| DAHUA_VTO_USERNAME       | -             | +        | Dahua VTO user name        |
-| DAHUA_VTO_PASSWORD       | -             | +        | Dahua VTO password         |
-| MQTT_BROKER_HOST         | -             | +        | MQTT Broker hostname or IP |
-| MQTT_BROKER_PORT         | -             | +        | MQTT Broker port           |
-| MQTT_BROKER_USERNAME     | -             | +        | MQTT Broker user name      |
-| MQTT_BROKER_PASSWORD     | -             | +        | MQTT Broker password       |
-| MQTT_BROKER_TOPIC_PREFIX | DahuaVTO      | -        | Topic to publish messages  |
-| MQTT_BROKER_CLIENT_ID    | DahuaVTO2MQTT | -        | MQTT Broker client ID      |
-| DEBUG                    | false         | -        | Enable debug log messages  |
+| Variable                 | Default         | Required | Description                                                     |
+|--------------------------|-----------------|----------|-----------------------------------------------------------------|
+| DAHUA_VTO_HOST           | -               | +        | Dahua VTO hostname or IP                                        |
+| DAHUA_VTO_USERNAME       | -               | +        | Dahua VTO user name                                             |
+| DAHUA_VTO_PASSWORD       | -               | +        | Dahua VTO password                                              |
+| MQTT_BROKER_HOST         | -               | +        | MQTT Broker hostname or IP                                      |
+| MQTT_BROKER_PORT         | -               | +        | MQTT Broker port                                                |
+| MQTT_BROKER_USERNAME     | -               | +        | MQTT Broker user name                                           |
+| MQTT_BROKER_PASSWORD     | -               | +        | MQTT Broker password                                            |
+| MQTT_BROKER_TOPIC_PREFIX | DahuaVTO        | -        | Topic to publish messages                                       |
+| MQTT_BROKER_CLIENT_ID    | DahuaVTO2MQTT   | -        | MQTT Broker client ID                                           |
+| API_DEBUG                | false           | -        | Enable debug log messages for the connection to the VTO device  |
+| MQTT_DEBUG               | false           | -        | Enable debug log messages for the connection to the MQTT broker |
+| TZ                       | America/Chicago | -        | Timezone                                                        |
 
 ## Commands
 

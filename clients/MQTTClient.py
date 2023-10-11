@@ -10,12 +10,23 @@ from common.consts import *
 from models.MQTTConfigData import MQTTConfigurationData
 
 
-_LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class MQTTClient(BaseClient):
     def __init__(self):
         super().__init__("MQTT")
+        logger.info(f"{MQTT_DEBUG=}")
+        if MQTT_DEBUG is True:
+            logger.setLevel(logging.DEBUG)
+            for handler in logger.handlers:
+                handler.setLevel(logging.DEBUG)
+            logger.info(f"Set DEBUG level for {__name__}")
+        else:
+            logger.setLevel(logging.INFO)
+            for handler in logger.handlers:
+                handler.setLevel(logging.INFO)
+            logger.info(f"Set INFO level for {__name__}")
 
         self._mqtt_config = MQTTConfigurationData()
         self._mqtt_client = mqtt.Client(self._mqtt_config.client_id, clean_session=True)
@@ -25,6 +36,7 @@ class MQTTClient(BaseClient):
         self._mqtt_client.on_connect = self._on_mqtt_connect
         self._mqtt_client.on_message = self._on_mqtt_message
         self._mqtt_client.on_disconnect = self._on_mqtt_disconnect
+
 
     @property
     def topic_command_prefix(self):
@@ -41,7 +53,7 @@ class MQTTClient(BaseClient):
 
         while not self.is_connected:
             try:
-                _LOGGER.info("MQTT Broker is trying to connect...")
+                logger.info("MQTT Broker is trying to connect...")
 
                 self._mqtt_client.connect(config.host, int(config.port), 60)
                 self._mqtt_client.loop_start()
@@ -52,7 +64,7 @@ class MQTTClient(BaseClient):
                 exc_type, exc_obj, exc_tb = sys.exc_info()
                 error_details = f"error: {ex}, Line: {exc_tb.tb_lineno}"
 
-                _LOGGER.error(f"Failed to connect to broker, retry in 60 seconds, {error_details}")
+                logger.error(f"Failed to connect to broker, retry in 60 seconds, {error_details}")
 
                 sleep(60)
 
@@ -63,14 +75,14 @@ class MQTTClient(BaseClient):
         payload = data.get("payload")
 
         topic = f"{self.topic_prefix}/{topic_suffix}"
-        _LOGGER.debug(f"Publishing MQTT message {topic}: {payload}")
+        logger.debug(f"Publishing MQTT message {topic}: {payload}")
 
         try:
             self._mqtt_client.publish(topic, json.dumps(payload, indent=4))
         except Exception as ex:
             exc_type, exc_obj, exc_tb = sys.exc_info()
 
-            _LOGGER.error(
+            logger.error(
                 f"Failed to publish message, "
                 f"Topic: {topic}, Payload: {payload}, "
                 f"Error: {ex}, Line: {exc_tb.tb_lineno}"
@@ -79,7 +91,7 @@ class MQTTClient(BaseClient):
     @staticmethod
     def _on_mqtt_connect(client, userdata, flags, rc):
         if rc == 0:
-            _LOGGER.info(f"MQTT Broker connected with result code {rc}")
+            logger.info(f"MQTT Broker connected with result code: {rc}")
 
             client.subscribe(f"{userdata.topic_command_prefix}#")
 
@@ -88,7 +100,7 @@ class MQTTClient(BaseClient):
         else:
             error_message = MQTT_ERROR_MESSAGES.get(rc, MQTT_ERROR_DEFAULT_MESSAGE)
 
-            _LOGGER.error(f"MQTT Broker failed due to {error_message}")
+            logger.error(f"MQTT Broker failed due to {error_message}")
 
             userdata.is_connected = False
 
@@ -96,7 +108,7 @@ class MQTTClient(BaseClient):
 
     @staticmethod
     def _on_mqtt_message(client, userdata, msg):
-        _LOGGER.debug(f"MQTT Message received, Topic: {msg.topic}, Payload: {msg.payload}")
+        logger.debug(f"MQTT Message received, Topic: {msg.topic}, Payload: {msg.payload}")
 
         try:
             payload = {}
@@ -118,7 +130,7 @@ class MQTTClient(BaseClient):
         except Exception as ex:
             exc_type, exc_obj, exc_tb = sys.exc_info()
 
-            _LOGGER.error(
+            logger.error(
                 f"Failed to invoke handler, "
                 f"Topic: {msg.topic}, Payload: {msg.payload}, "
                 f"Error: {ex}, Line: {exc_tb.tb_lineno}"
@@ -128,7 +140,7 @@ class MQTTClient(BaseClient):
     def _on_mqtt_disconnect(client, userdata, rc):
         reason = MQTT_ERROR_MESSAGES.get(rc, MQTT_ERROR_DEFAULT_MESSAGE)
 
-        _LOGGER.warning(f"MQTT Broker got disconnected, Reason Code: {rc} - {reason}")
+        logger.warning(f"MQTT Broker got disconnected, Reason: {reason} - Code: {rc}")
 
         userdata.is_connected = False
 

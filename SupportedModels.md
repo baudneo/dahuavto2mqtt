@@ -7,3 +7,4 @@
 - VTO2000A(-2)
 - VTO2202F-P
 - VTO3221E
+- Lorex 2K Wired Video Doorbell (B451AJ) [Enable DEBUG=True]

@@ -4,8 +4,9 @@ import logging
 from threading import Timer
 from typing import Optional
 
+from common.consts import API_DEBUG, MQTT_DEBUG
 
-_LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class BaseClient:
@@ -23,7 +24,7 @@ class BaseClient:
         return self.is_running and not self.is_connected
 
     def initialize(self, incoming_events: queue.Queue):
-        _LOGGER.info(f"Initialize {self.client_name}Client")
+        logger.info(f"Initialize {self.client_name}Client")
 
         self._incoming_events = incoming_events
 
@@ -33,7 +34,7 @@ class BaseClient:
         self.connect()
 
     def terminate(self):
-        _LOGGER.info(f"Terminating {self.client_name}Client")
+        logger.info(f"Terminating {self.client_name}Client")
 
         self.is_connected = False
         self.is_running = False
@@ -42,7 +43,7 @@ class BaseClient:
         self.outgoing_events = None
 
     def connect(self):
-        _LOGGER.info(f"Starting to connect {self.client_name}Client, Should connect: {self.should_connect}")
+        logger.info(f"Starting to connect {self.client_name}Client, Should connect: {self.should_connect}")
 
         if self.should_connect:
             self._timer_connect = Timer(1.0, self._connect)
@@ -68,4 +69,7 @@ class BaseClient:
                 self._timer_listen.start()
 
     def _event_received(self, data):
-        _LOGGER.debug(f"{self.client_name}Client Event received, Data: {data}")
+        if self.client_name == "MQTT" and MQTT_DEBUG:
+            logger.debug(f"{self.client_name}Client Event received, Data: {data}")
+        elif self.client_name == "Dahua" and API_DEBUG:
+            logger.debug(f"{self.client_name}Client Event received, Data: {data}")

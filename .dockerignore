@@ -6,3 +6,6 @@ venv/
 *.yml
 *.pyc
 *.md
+Dockerfile
+LICENSE
+

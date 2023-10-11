@@ -1,24 +1,35 @@
-FROM python:3.10-alpine
-MAINTAINER Elad Bar <elad.bar@hotmail.com>
+FROM python:3.11-alpine
+MAINTAINER baudneo <baudneo@protonmail.com>
 
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 
-COPY . ./
+COPY ./requirements.txt /tmp
 
-RUN apk update && \
-    apk upgrade && \
-    pip install paho-mqtt requests
+RUN set -x \
+    && apk update \
+    && apk upgrade \
+    && pip install --no-cache-dir -r /tmp/requirements.txt \
+    && echo "[install]" >> /etc/pip.conf \
+    && echo "compile = no" >> /etc/pip.conf \
+    && echo "[global]" >> /etc/pip.conf \
+    && echo "no-cache-dir = True" >> /etc/pip.conf
 
-ENV DAHUA_VTO_HOST=vto-host
-ENV DAHUA_VTO_USERNAME=Username
-ENV DAHUA_VTO_PASSWORD=Password
+ENV DAHUA_VTO_HOST=DeviceIP
+ENV DAHUA_VTO_USERNAME=DeviceUsername
+ENV DAHUA_VTO_PASSWORD=DevicePassword
 ENV MQTT_BROKER_HOST=mqtt-host
 ENV MQTT_BROKER_PORT=1883
-ENV MQTT_BROKER_USERNAME=Username
-ENV MQTT_BROKER_PASSWORD=Password
+ENV MQTT_BROKER_USERNAME=MQTTUsername
+ENV MQTT_BROKER_PASSWORD=MQTTPassword
 ENV MQTT_BROKER_TOPIC_PREFIX=DahuaVTO
 ENV MQTT_BROKER_CLIENT_ID=DahuaVTO2MQTT
+ENV TZ=America/Chicago
 
-RUN chmod +x /app/DahuaVTO.py
+COPY ./clients/ /app/clients/
+COPY ./common/ /app/common/
+COPY ./models/ /app/models/
+COPY ./DahuaVTO.py /app
 
 ENTRYPOINT ["python3", "/app/DahuaVTO.py"]

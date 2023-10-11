@@ -1,4 +1,10 @@
 # Changelog
+## 2023-Sep-17
+
+- Update image to Python 3.11
+- Fix logic to retry sending messages to VTO device
+- Fix Access Control issue (Likely caused by rebranded doorbells [Lorex, Amcrest, etc.]) [#54]() [#64]() [#65]()
+- Separate DEBUG level logs between Dahua device and MQTT broker
 
 ## 2022-Aug-08
 

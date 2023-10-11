@@ -1,8 +1,11 @@
+import logging
 import os
 from typing import Optional, Dict
 
+
 from common.consts import *
 
+logger = logging.getLogger(__name__)
 
 class MQTTConfigurationData:
     host: Optional[str]
@@ -11,6 +14,17 @@ class MQTTConfigurationData:
     port: Optional[int]
     topic_prefix: Optional[str]
     topic_command_prefix: Optional[str]
+    logger.info(f"{MQTT_DEBUG=}")
+    if MQTT_DEBUG is True:
+        logger.setLevel(logging.DEBUG)
+        for handler in logger.handlers:
+            handler.setLevel(logging.DEBUG)
+        logger.info(f"Set DEBUG level for {__name__}")
+    else:
+        logger.setLevel(logging.INFO)
+        for handler in logger.handlers:
+            handler.setLevel(logging.INFO)
+        logger.info(f"Set INFO level for {__name__}")
 
     def __init__(self):
         self.client_id = os.environ.get('MQTT_BROKER_CLIENT_ID', DEFAULT_MQTT_CLIENT_ID)
