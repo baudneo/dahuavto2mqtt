@@ -27,7 +27,8 @@ __all__ = [
     "DEVICE_TYPE_ATTEMPTS",
     "VERSION_ATTEMPTS",
     "API_DEBUG",
-    "MQTT_DEBUG"
+    "MQTT_DEBUG",
+    "KEEPALIVE_DEBUG",
 ]
 
 DEFAULT_MQTT_CLIENT_ID = "DahuaVTO2MQTT"
@@ -91,3 +92,4 @@ VERSION_ATTEMPTS = 4
 
 API_DEBUG = str(os.environ.get("API_DEBUG", False)).casefold() == str(True).casefold()
 MQTT_DEBUG = str(os.environ.get("MQTT_DEBUG", False)).casefold() == str(True).casefold()
+KEEPALIVE_DEBUG = str(os.environ.get("KEEPALIVE_DEBUG", False)).casefold() == str(True).casefold()
