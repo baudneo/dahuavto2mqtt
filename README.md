@@ -7,18 +7,22 @@ Listens to events from all Dahua devices - VTO, Camera, NVR unit and publishes t
 
 [Supported Models](./SupportedModels.md)
 
+## Notes
+- **Lorex 2k Doorbell username is always** `admin`
+- **Lorex 2k Doorbell password is whatever you set it to in the lorex mobile app**
+
 ## How to install
 ### Docker Compose
 ```dockerfile
 version: '3'
 services:
   dahuavto2mqtt:
-    image: "registry.gitlab.com/elad.bar/dahuavto2mqtt:latest"
+    image: "baudneo/dahuavto2mqtt:test"
     container_name: "dahuavto2mqtt"
     hostname: "dahuavto2mqtt"
     restart: "unless-stopped"
     environment:
-      - DAHUA_VTO_HOST=vto-host
+      - DAHUA_VTO_HOST=ip.of.vto.host
       - DAHUA_VTO_USERNAME=Username
       - DAHUA_VTO_PASSWORD=Password
       - MQTT_BROKER_HOST=mqtt-host
@@ -27,7 +31,9 @@ services:
       - MQTT_BROKER_PASSWORD=Password 
       - MQTT_BROKER_TOPIC_PREFIX=DahuaVTO
       - MQTT_BROKER_CLIENT_ID=DahuaVTO2MQTT
-      - DEBUG=False
+      - MQTT_DEBUG=False
+      - API_DEBUG=False
+      - KEEPALIVE_DEBUG=False
       - TZ=America/Chicago
 ```
 
@@ -45,7 +51,8 @@ services:
 | MQTT_BROKER_CLIENT_ID    | DahuaVTO2MQTT   | -        | MQTT Broker client ID                                           |
 | API_DEBUG                | false           | -        | Enable debug log messages for the connection to the VTO device  |
 | MQTT_DEBUG               | false           | -        | Enable debug log messages for the connection to the MQTT broker |
-| TZ                       | America/Chicago | -        | Timezone                                                        |
+| KEEPALIVE_DEBUG          | false           | -        | Enable debug log messages for keepalive packets                 |
+| TZ                       | America/Chicago | -        | Timezone for proper logging timestamp                           |
 
 ## Commands
 

@@ -3,6 +3,7 @@ import asyncio
 import hashlib
 import json
 import logging
+import os
 import queue
 import struct
 import sys
@@ -626,7 +627,7 @@ class DahuaAPI(asyncio.Protocol):
         :return:
         """
         lp: str = "keep_alive::"
-        logger.debug(f"{lp} Sending packet")
+        logger.debug(f"{lp} Sending packet") if os.environ.get("KEEPALIVE_DEBUG") in (True, 'true', 'True') else None
 
         def handle_keep_alive(message):
             """Handle the keep alive response from the VTO device.

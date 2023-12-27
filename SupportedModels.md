@@ -7,4 +7,5 @@
 - VTO2000A(-2)
 - VTO2202F-P
 - VTO3221E
-- Lorex 2K Wired Video Doorbell (B451AJ) [Enable DEBUG=True]
+- Lorex 2K Wired Video Doorbell (B451AJ) [Enable API_DEBUG=True]
+- Amcrest AD110/410 should be supported but I have not tested it.
