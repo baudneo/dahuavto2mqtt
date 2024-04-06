@@ -1,4 +1,11 @@
 # Changelog
+
+## 2024-Apr-06
+
+- Update to Python 3.12.2 (Paho v2.0 has been tested upto 3.12)
+- Update paho-mqtt to v2.0 and pin to >=2.0
+- Small changes to MQTT client logic for paho-mqtt 2.0
+
 ## 2023-Sep-17
 
 - Update image to Python 3.11
