@@ -16,7 +16,9 @@ compile = no
 [global]
 no-cache-dir = True
 EOF
-    && pip install -r /tmp/requirements.txt \
+
+RUN set -x \
+    && pip install -r /tmp/requirements.txt
 
 ENV DAHUA_VTO_HOST=DeviceIP
 ENV DAHUA_VTO_USERNAME=DeviceUsername
