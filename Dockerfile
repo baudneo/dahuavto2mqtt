@@ -1,5 +1,4 @@
-FROM python:3.11-alpine
-MAINTAINER baudneo <baudneo@protonmail.com>
+FROM python:3.12.2-alpine
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -9,12 +8,15 @@ COPY ./requirements.txt /tmp
 
 RUN set -x \
     && apk update \
-    && apk upgrade \
-    && pip install --no-cache-dir -r /tmp/requirements.txt \
-    && echo "[install]" >> /etc/pip.conf \
-    && echo "compile = no" >> /etc/pip.conf \
-    && echo "[global]" >> /etc/pip.conf \
-    && echo "no-cache-dir = True" >> /etc/pip.conf
+    && apk add --no-cache curl \
+    && cat <<EOF > /tmp/pip.conf
+[install]
+compile = no
+
+[global]
+no-cache-dir = True
+EOF
+    && pip install -r /tmp/requirements.txt \
 
 ENV DAHUA_VTO_HOST=DeviceIP
 ENV DAHUA_VTO_USERNAME=DeviceUsername
