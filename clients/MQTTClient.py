@@ -3,6 +3,7 @@ import logging
 import sys
 from time import sleep
 
+from paho.mqtt import reasoncodes
 import paho.mqtt.client as mqtt
 
 from clients.BaseClient import BaseClient
@@ -27,16 +28,14 @@ class MQTTClient(BaseClient):
             for handler in logger.handlers:
                 handler.setLevel(logging.INFO)
             logger.info(f"Set INFO level for {__name__}")
-
         self._mqtt_config = MQTTConfigurationData()
-        self._mqtt_client = mqtt.Client(self._mqtt_config.client_id, clean_session=True)
+        self._mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, self._mqtt_config.client_id, clean_session=True)
         self._mqtt_client.user_data_set(self)
         self._mqtt_client.username_pw_set(self._mqtt_config.username, self._mqtt_config.password)
 
         self._mqtt_client.on_connect = self._on_mqtt_connect
         self._mqtt_client.on_message = self._on_mqtt_message
         self._mqtt_client.on_disconnect = self._on_mqtt_disconnect
-
 
     @property
     def topic_command_prefix(self):
@@ -89,16 +88,16 @@ class MQTTClient(BaseClient):
             )
 
     @staticmethod
-    def _on_mqtt_connect(client, userdata, flags, rc):
-        if rc == 0:
-            logger.info(f"MQTT Broker connected with result code: {rc}")
+    def _on_mqtt_connect(client, userdata, flags, reason_code: reasoncodes.ReasonCode, properties):
+        if reason_code == 0:
+            logger.info(f"MQTT Broker connected with result code: {reason_code}")
 
             client.subscribe(f"{userdata.topic_command_prefix}#")
 
             userdata.is_connected = True
 
         else:
-            error_message = MQTT_ERROR_MESSAGES.get(rc, MQTT_ERROR_DEFAULT_MESSAGE)
+            error_message = MQTT_ERROR_MESSAGES.get(reason_code, MQTT_ERROR_DEFAULT_MESSAGE)
 
             logger.error(f"MQTT Broker failed due to {error_message}")
 
@@ -137,11 +136,8 @@ class MQTTClient(BaseClient):
             )
 
     @staticmethod
-    def _on_mqtt_disconnect(client, userdata, rc):
-        reason = MQTT_ERROR_MESSAGES.get(rc, MQTT_ERROR_DEFAULT_MESSAGE)
-
-        logger.warning(f"MQTT Broker got disconnected, Reason: {reason} - Code: {rc}")
-
+    def _on_mqtt_disconnect(client, userdata, flags, reason_code, properties):
+        # reason_code should now be a string, its __eq__ method still uses ints though.
+        logger.warning(f"MQTT Broker got disconnected, Reason: {reason_code}")
         userdata.is_connected = False
-
         super(MQTTClient, userdata).connect()

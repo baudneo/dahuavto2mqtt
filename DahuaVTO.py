@@ -20,6 +20,7 @@ class DahuaVTOManager:
         while True:
             sleep(1)
 
+
 if __name__ == "__main__":
     log_level = logging.DEBUG
     root = logging.getLogger()
