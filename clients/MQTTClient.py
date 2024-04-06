@@ -52,7 +52,7 @@ class MQTTClient(BaseClient):
 
         while not self.is_connected:
             try:
-                logger.info("MQTT Broker is trying to connect...")
+                logger.info("Trying to connect to MQTT Broker...")
 
                 self._mqtt_client.connect(config.host, int(config.port), 60)
                 self._mqtt_client.loop_start()
@@ -90,25 +90,18 @@ class MQTTClient(BaseClient):
     @staticmethod
     def _on_mqtt_connect(client, userdata, flags, reason_code: reasoncodes.ReasonCode, properties):
         if reason_code == 0:
-            logger.info(f"MQTT Broker connected with result code: {reason_code}")
-
+            logger.info(f"Connected to MQTT broker with result code: {reason_code}")
             client.subscribe(f"{userdata.topic_command_prefix}#")
-
             userdata.is_connected = True
 
         else:
-            error_message = MQTT_ERROR_MESSAGES.get(reason_code, MQTT_ERROR_DEFAULT_MESSAGE)
-
-            logger.error(f"MQTT Broker failed due to {error_message}")
-
+            logger.error(f"Connecting to MQTT Broker failed due to {reason_code}")
             userdata.is_connected = False
-
             super(MQTTClient, userdata).connect()
 
     @staticmethod
     def _on_mqtt_message(client, userdata, msg):
         logger.debug(f"MQTT Message received, Topic: {msg.topic}, Payload: {msg.payload}")
-
         try:
             payload = {}
 
@@ -119,7 +112,6 @@ class MQTTClient(BaseClient):
                     payload = json.loads(data)
 
             topic = msg.topic.replace(userdata.topic_command_prefix, "")
-
             event_data = {
                 "topic": topic,
                 "payload": payload
@@ -130,7 +122,7 @@ class MQTTClient(BaseClient):
             exc_type, exc_obj, exc_tb = sys.exc_info()
 
             logger.error(
-                f"Failed to invoke handler, "
+                f"Failed to invoke msg ID handler, "
                 f"Topic: {msg.topic}, Payload: {msg.payload}, "
                 f"Error: {ex}, Line: {exc_tb.tb_lineno}"
             )
@@ -138,6 +130,6 @@ class MQTTClient(BaseClient):
     @staticmethod
     def _on_mqtt_disconnect(client, userdata, flags, reason_code, properties):
         # reason_code should now be a string, its __eq__ method still uses ints though.
-        logger.warning(f"MQTT Broker got disconnected, Reason: {reason_code}")
+        logger.warning(f"Disconnected from broker! Reason: {reason_code}")
         userdata.is_connected = False
         super(MQTTClient, userdata).connect()
