@@ -39,4 +39,6 @@ COPY ./common/ /app/common/
 COPY ./models/ /app/models/
 COPY ./DahuaVTO.py /app
 
+LABEL org.opencontainers.image.source = "https://github.com/baudneo/dahuavto2mqtt"
+
 ENTRYPOINT ["python3", "/app/DahuaVTO.py"]
