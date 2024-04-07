@@ -17,7 +17,7 @@ Listens to events from all Dahua devices - VTO, Camera, NVR unit and publishes t
 version: '3'
 services:
   dahuavto2mqtt:
-    image: "baudneo/dahuavto2mqtt:test"
+    image: "baudneo/dahuavto2mqtt:latest"
     container_name: "dahuavto2mqtt"
     hostname: "dahuavto2mqtt"
     restart: "unless-stopped"
@@ -35,6 +35,7 @@ services:
       - API_DEBUG=False
       - KEEPALIVE_DEBUG=False
       - TZ=America/Chicago
+      
 ```
 
 ### Environment Variables
