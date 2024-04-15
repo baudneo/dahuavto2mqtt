@@ -5,16 +5,16 @@ services:
     hostname: "dahuavto2mqtt"
     restart: "unless-stopped"
     environment:
-      - DAHUA_VTO_HOST=ip.of.vto.host
-      - DAHUA_VTO_USERNAME=Username
-      - DAHUA_VTO_PASSWORD=Password
-      - MQTT_BROKER_HOST=mqtt-host
-      - MQTT_BROKER_PORT=1883
-      - MQTT_BROKER_USERNAME=Username
-      - MQTT_BROKER_PASSWORD=Password
-      - MQTT_BROKER_TOPIC_PREFIX=DahuaVTO
-      - MQTT_BROKER_CLIENT_ID=DahuaVTO2MQTT
-      - MQTT_DEBUG=False
-      - API_DEBUG=False
-      - KEEPALIVE_DEBUG=False
-      - TZ=America/Chicago
+      DAHUA_VTO_HOST: ip.of.vto.host
+      DAHUA_VTO_USERNAME: Username
+      DAHUA_VTO_PASSWORD: Password
+      MQTT_BROKER_HOST: mqtt-host
+      MQTT_BROKER_PORT: 1883
+      MQTT_BROKER_USERNAME: Username
+      MQTT_BROKER_PASSWORD: Password
+      MQTT_BROKER_TOPIC_PREFIX: DahuaVTO
+      MQTT_BROKER_CLIENT_ID: DahuaVTO2MQTT
+      MQTT_DEBUG: False
+      API_DEBUG: False
+      KEEPALIVE_DEBUG: False
+      TZ: America/Chicago
